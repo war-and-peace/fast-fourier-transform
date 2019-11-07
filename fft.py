@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
+from PIL import Image
 
 class FFT:
     '''Holds a collection of Fast Fourier Transform implementations for 1D and 2D input'''
@@ -56,7 +57,7 @@ class FFT:
 class Compressor:
     '''Class for compressing the images'''
 
-    def __init__(self, directory='input', outputDirectory='AbdurasulRakhimovOutputs'):
+    def __init__(self, directory='inputs', outputDirectory='AbdurasulRakhimovOutputs'):
         '''Initializer. Initializes the input directory and the output directory. '''
 
         self.fft = FFT()
@@ -86,10 +87,13 @@ class Compressor:
                 image[i][j] = image[i][j] if matplotlib.numpy.absolute(image[i][j]) > threshold else 0.0
         
         image = self.fft.fft2(image, inverse=True)
-        image = matplotlib.numpy.absolute(image)
-        image *= (255.0 / image.max())
-        image = matplotlib.numpy.ndarray.astype(image, dtype=matplotlib.numpy.uint8)
-        plt.imsave(outputFilePath, image, cmap='gray', format='TIFF')
+        image = matplotlib.numpy.log(matplotlib.numpy.absolute(image))
+        pil_image = Image.fromarray(image, mode='L')
+        pil_image.save(outputFilePath)
+        # image *= (255.0 / image.max())
+        # image = matplotlib.numpy.ndarray.astype(image, dtype=matplotlib.numpy.uint8)
+
+        # plt.imsave(outputFilePath, image, cmap='gray', format='TIFF')
 
 
     def compressAll(self):
